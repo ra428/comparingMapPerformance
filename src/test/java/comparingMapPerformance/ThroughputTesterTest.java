@@ -22,7 +22,7 @@ public class ThroughputTesterTest {
     private TaskFactory taskFactory = mock(TaskFactory.class);
     private Map map = mock(Map.class);
     private Clock clock = mock(Clock.class);
-    private AtomicInteger counter;
+    private AtomicInteger counter = new AtomicInteger();
 
     @Test
     public void counterCountsMapOperations() {
@@ -57,19 +57,14 @@ public class ThroughputTesterTest {
         new ThroughputTester(map, executorService, 1, counter, clock, taskFactory).throughput();
 
         verify(executorService, times(noOfCalls)).execute(any());
-        verify(executorService, times(1)).shutdown();
+        verify(executorService, times(1)).shutdownNow();
     }
 
     @Before
     public void setUp() {
         doAnswer(emptyRunnable()).when(taskFactory).task(anyMap(), any());
-        doAnswer(i -> {
-                    ((Runnable) i.getArguments()[0]).run();
-                    return null;
-                }
-        ).when(executorService).execute(any());
+        doAnswer(executeRunnable()).when(executorService).execute(any());
 
-        when(executorService.isShutdown()).thenReturn(true);
         doAnswer(new Answer<Instant>() {
             private int count = 0;
 
@@ -80,11 +75,17 @@ public class ThroughputTesterTest {
                 return Instant.parse("2007-12-04T00:00:00.00Z");
             }
         }).when(clock).instant();
+    }
 
-        counter = new AtomicInteger();
+    private Answer executeRunnable() {
+        return i -> {
+            ((Runnable) i.getArguments()[0]).run();
+            return null;
+        };
     }
 
     private Answer<Runnable> emptyRunnable() {
-        return invocation -> () -> { };
+        return i -> () -> {
+        };
     }
 }

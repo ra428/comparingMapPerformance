@@ -44,7 +44,7 @@ public class ThroughputTester {
             executorService.execute(taskFactory.task(map, counter));
         }
         while (clock.instant().isBefore(finishTime));
-        executorService.shutdown();
+        executorService.shutdownNow();
     }
 
     static ThroughputTester from(Map map, int testDurationMillis, int numberOfThreads) {

@@ -2,7 +2,7 @@ package comparingMapPerformance;
 
 public class App {
     public static void main(String[] args) {
-        int testDurationInMillis = 1000;
+        int testDurationInMillis = 10000;
         Scenarios.from(testDurationInMillis).run();
     }
 }

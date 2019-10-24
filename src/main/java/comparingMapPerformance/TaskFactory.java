@@ -19,12 +19,18 @@ public class TaskFactory {
     Runnable task(Map<Integer, Integer> map, AtomicInteger counter) {
         return () -> {
             LOGGER.fine(format("<%s> Executing task", Thread.currentThread().getName()));
-            int anInt = random.nextInt(10);
+            int anInt = random.nextInt(100);
 
             if (map.containsKey(anInt)) {
-                if (anInt > 8) map.remove(anInt);
+                if (anInt <= 2) {
+                    LOGGER.fine(format("<%s> Removing %s", Thread.currentThread().getName(), anInt));
+                    map.remove(anInt);
+                }
             } else {
-                if (anInt >= 4) map.put(anInt, anInt);
+                if (anInt <= 60) {
+                    LOGGER.fine(format("<%s> Putting %s", Thread.currentThread().getName(), anInt));
+                    map.put(anInt, anInt);
+                }
             }
             counter.incrementAndGet();
         };

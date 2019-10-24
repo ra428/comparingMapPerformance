@@ -23,9 +23,9 @@ public class TaskFactoryTest {
     private TaskFactory taskFactory = new TaskFactory(random);
 
     @Test
-    public void removesElementWhenRandomIsGreaterThanEight() {
-        when(random.nextInt(10)).thenReturn(9);
-        Map<Integer, Integer> map = Stream.of(9).collect(toMap(identity(), identity()));
+    public void removesElementWhenRandomIsLessThanTwo() {
+        when(random.nextInt(100)).thenReturn(2);
+        Map<Integer, Integer> map = Stream.of(2).collect(toMap(identity(), identity()));
 
         runTask(map);
 
@@ -33,8 +33,8 @@ public class TaskFactoryTest {
     }
 
     @Test
-    public void addsElementWhenRandomIsBetweenEightAndFour() {
-        when(random.nextInt(10)).thenReturn(4);
+    public void addsElementWhenRandomIsLessThanSixty() {
+        when(random.nextInt(100)).thenReturn(50);
         Map<Integer, Integer> map = new HashMap<>();
 
         runTask(map);
@@ -44,7 +44,7 @@ public class TaskFactoryTest {
 
     @Test
     public void incrementsCounter() {
-        when(random.nextInt(10)).thenReturn(0);
+        when(random.nextInt(100)).thenReturn(0);
         AtomicInteger counter = new AtomicInteger();
 
         for (int i = 1; i < 4; i++) {

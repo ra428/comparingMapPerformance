@@ -31,6 +31,7 @@ class Scenarios {
     }
 
     private List<Float> computeThroughputs(Map m) {
+        LOGGER.info(format("Computing for %s", m.getClass().getSimpleName()));
         return threads.stream()
                 .map(t -> ThroughputTester.from(m, testDuration, t).throughput())
                 .collect(toList());
@@ -38,12 +39,13 @@ class Scenarios {
 
     private static List<Integer> threads() {
         return Arrays.asList(1, 2, 4, 16, 32, 64, 128, 256);
+//        return Arrays.asList(1);
     }
 
     private static List<Map> maps() {
         return Arrays.asList(
                 SynchronisedMap.hashMap(),
-                SynchronisedMap.treeMap(),
+//                SynchronisedMap.treeMap(),
                 new ConcurrentHashMap<>(),
                 new ConcurrentSkipListMap<>()
         );
