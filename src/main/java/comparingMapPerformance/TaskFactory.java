@@ -23,12 +23,12 @@ public class TaskFactory {
 
             if (map.containsKey(anInt)) {
                 if (anInt <= 2) {
-                    LOGGER.fine(format("<%s> Removing %s", Thread.currentThread().getName(), anInt));
+//                    LOGGER.fine(format("<%s> Removing %s", Thread.currentThread().getName(), anInt));
                     map.remove(anInt);
                 }
             } else {
                 if (anInt <= 60) {
-                    LOGGER.fine(format("<%s> Putting %s", Thread.currentThread().getName(), anInt));
+//                    LOGGER.fine(format("<%s> Putting %s", Thread.currentThread().getName(), anInt));
                     map.put(anInt, anInt);
                 }
             }

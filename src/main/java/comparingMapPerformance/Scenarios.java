@@ -1,23 +1,21 @@
 package comparingMapPerformance;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.logging.Logger;
 
 import static java.lang.String.format;
+import static java.util.Collections.synchronizedMap;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 
 class Scenarios {
 
     private final int testDuration;
-    private List<Map> maps;
+    private final List<Map> maps;
     private final List<Integer> threads;
     private final static Logger LOGGER = Logger.getLogger(Scenarios.class.getSimpleName());
-
 
     Scenarios(List<Map> maps, List<Integer> threads, int testDuration) {
         this.testDuration = testDuration;
@@ -31,7 +29,6 @@ class Scenarios {
     }
 
     private List<Float> computeThroughputs(Map m) {
-        LOGGER.info(format("Computing for %s", m.getClass().getSimpleName()));
         return threads.stream()
                 .map(t -> ThroughputTester.from(m, testDuration, t).throughput())
                 .collect(toList());
@@ -39,13 +36,11 @@ class Scenarios {
 
     private static List<Integer> threads() {
         return Arrays.asList(1, 2, 4, 16, 32, 64, 128, 256);
-//        return Arrays.asList(1);
     }
 
     private static List<Map> maps() {
         return Arrays.asList(
-                SynchronisedMap.hashMap(),
-//                SynchronisedMap.treeMap(),
+                synchronizedMap(new HashMap<>()),
                 new ConcurrentHashMap<>(),
                 new ConcurrentSkipListMap<>()
         );
