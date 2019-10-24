@@ -12,20 +12,19 @@ public class TaskFactory {
     private final static Logger LOGGER = Logger.getLogger(TaskFactory.class.getSimpleName());
     private final Random random;
 
-    public TaskFactory(Random random) {
+    TaskFactory(Random random) {
         this.random = random;
     }
 
-    Runnable task(Map map, AtomicInteger counter) {
+    Runnable task(Map<Integer, Integer> map, AtomicInteger counter) {
         return () -> {
             LOGGER.fine(format("<%s> Executing task", Thread.currentThread().getName()));
-            Object object = new Object();
-            int r = random.nextInt(10);
+            int anInt = random.nextInt(10);
 
-            if (map.containsKey(object.hashCode())) {
-                if (r > 9) map.remove(object.hashCode());
+            if (map.containsKey(anInt)) {
+                if (anInt > 8) map.remove(anInt);
             } else {
-                if (r > 4) map.put(object.hashCode(), object);
+                if (anInt >= 4) map.put(anInt, anInt);
             }
             counter.incrementAndGet();
         };
