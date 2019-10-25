@@ -12,7 +12,7 @@ import static java.util.concurrent.ThreadPoolExecutor.DiscardPolicy;
 import static java.util.concurrent.TimeUnit.SECONDS;
 
 public class ThroughputTester {
-    private static final long WARMUP_DURATION = 1000;
+    private static final long WARMUP_DURATION = 2000;
     private final Map map;
     private final int testDuration;
     private final AtomicInteger counter;

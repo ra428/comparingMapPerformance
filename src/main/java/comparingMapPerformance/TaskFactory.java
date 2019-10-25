@@ -5,8 +5,6 @@ import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Logger;
 
-import static java.lang.String.format;
-
 public class TaskFactory {
 
     private final static Logger LOGGER = Logger.getLogger(TaskFactory.class.getSimpleName());
@@ -18,7 +16,7 @@ public class TaskFactory {
 
     Runnable task(Map<Integer, Integer> map, AtomicInteger counter) {
         return () -> {
-            LOGGER.fine(format("<%s> Executing task", Thread.currentThread().getName()));
+//            LOGGER.fine(format("<%s> Executing task", Thread.currentThread().getName()));
             int anInt = random.nextInt(100);
 
             if (map.containsKey(anInt)) {
