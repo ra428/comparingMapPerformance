@@ -2,35 +2,36 @@ package comparingMapPerformance;
 
 import java.util.Map;
 import java.util.Random;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.Callable;
 import java.util.logging.Logger;
 
 public class TaskFactory {
 
-    private final static Logger LOGGER = Logger.getLogger(TaskFactory.class.getSimpleName());
     private final Random random;
+    private final static Logger LOGGER = Logger.getLogger(TaskFactory.class.getSimpleName());
 
     TaskFactory(Random random) {
         this.random = random;
     }
 
-    Runnable task(Map<Integer, Integer> map, AtomicInteger counter) {
+    Callable<Integer> task(Map<Integer, Integer> map) {
         return () -> {
-//            LOGGER.fine(format("<%s> Executing task", Thread.currentThread().getName()));
+            LOGGER.fine("Running task");
+            int count = 1;
             int anInt = random.nextInt(100);
 
             if (map.containsKey(anInt)) {
                 if (anInt <= 2) {
-//                    LOGGER.fine(format("<%s> Removing %s", Thread.currentThread().getName(), anInt));
                     map.remove(anInt);
+                    count++;
                 }
             } else {
                 if (anInt <= 60) {
-//                    LOGGER.fine(format("<%s> Putting %s", Thread.currentThread().getName(), anInt));
                     map.put(anInt, anInt);
+                    count++;
                 }
             }
-            counter.incrementAndGet();
+            return count;
         };
     }
 

@@ -1,7 +1,6 @@
 package comparingMapPerformance;
 
 import org.junit.Test;
-import org.mockito.stubbing.Answer;
 
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
@@ -19,31 +18,30 @@ public class ThroughputTesterTest {
     private Map map = mock(Map.class);
     private AtomicInteger counter = new AtomicInteger();
     private TimedRunner warmupRunner = mock(TimedRunner.class);
-    private TimedRunner timedRunner = mock(TimedRunner.class);
+    private TimedTaskCounter timedTaskCounter = mock(TimedTaskCounter.class);
     private int testDuration = 1;
-    private ThroughputTester throughputTester = new ThroughputTester(map, executorService, testDuration, counter, taskFactory, warmupRunner, timedRunner);
+    private ThroughputTester throughputTester = new ThroughputTester(map, executorService, testDuration, taskFactory, warmupRunner, timedTaskCounter);
 
     @Test
     public void throughputEqualsCountDividedByDuration() {
-        counter = new AtomicInteger(5);
-        throughputTester = new ThroughputTester(map, executorService, testDuration, counter, taskFactory, warmupRunner, timedRunner);
+        doAnswer(i -> 1).when(timedTaskCounter).run(any(), any());
+        throughputTester = new ThroughputTester(map, executorService, testDuration, taskFactory, warmupRunner, timedTaskCounter);
         float throughput = throughputTester.throughput();
 
-        assertThat(throughput, is(equalTo(counter.floatValue() / testDuration)));
+        assertThat(throughput, is(equalTo(1f)));
     }
 
     @Test
-    public void executesWarmupAndTimedRunnables() {
+    public void executesWarmupAndTimedTasks() {
         throughputTester.throughput();
 
         verify(warmupRunner, times(1)).run(any());
-        verify(timedRunner, times(1)).run(any());
-        verify(executorService, times(1)).shutdownNow();
+        verify(timedTaskCounter, times(1)).run(any(),any() );
     }
 
     @Test
     public void warmupDoesNotIncrementCounter() {
-        doAnswer(executeRunnable()).when(warmupRunner).run(any());
+        doAnswer(i -> 1).when(warmupRunner).run(any());
 
         float throughput = throughputTester.throughput();
 
@@ -52,21 +50,10 @@ public class ThroughputTesterTest {
 
     @Test
     public void timedRunnerUsesExecutorServiceToIncrementCounter() {
-        doAnswer(executeRunnable()).when(timedRunner).run(any());
-        doAnswer((Answer<Void>) invocation -> {
-            counter.incrementAndGet();
-            return null;
-        }).when(executorService).execute(any());
+        doAnswer(i -> 1).when(timedTaskCounter).run(any(), any());
 
         float throughput = throughputTester.throughput();
 
         assert throughput == 1f;
-    }
-
-    private Answer executeRunnable() {
-        return i -> {
-            ((Runnable) i.getArguments()[0]).run();
-            return null;
-        };
     }
 }

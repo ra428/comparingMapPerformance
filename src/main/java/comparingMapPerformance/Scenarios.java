@@ -4,12 +4,9 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.logging.Logger;
 
 import static java.lang.String.format;
-import static java.util.Collections.synchronizedMap;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 
@@ -38,14 +35,16 @@ class Scenarios {
     }
 
     private static List<Integer> threads() {
-        return Arrays.asList(1, 2, 4, 16, 32, 64, 128, 256);
+        return Arrays.asList(64,32,16,8,4,2,1);
     }
 
     private static List<Map> maps() {
         return Arrays.asList(
-                synchronizedMap(new HashMap<>()),
-                new ConcurrentHashMap<>(),
-                new ConcurrentSkipListMap<>()
+                new HashMap()
+//                new ConcurrentHashMap()
+//                new ConcurrentHashMap<>(),
+//                synchronizedMap(new HashMap<>())
+//                new ConcurrentSkipListMap<>()
         );
     }
 

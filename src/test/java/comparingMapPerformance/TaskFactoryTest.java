@@ -5,7 +5,6 @@ import org.junit.Test;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
 
 import static java.util.function.Function.identity;
@@ -27,9 +26,10 @@ public class TaskFactoryTest {
         when(random.nextInt(100)).thenReturn(2);
         Map<Integer, Integer> map = Stream.of(2).collect(toMap(identity(), identity()));
 
-        runTask(map);
+        int count = call(map);
 
         assertThat(map, is(anEmptyMap()));
+        assert count == 2;
     }
 
     @Test
@@ -37,27 +37,17 @@ public class TaskFactoryTest {
         when(random.nextInt(100)).thenReturn(50);
         Map<Integer, Integer> map = new HashMap<>();
 
-        runTask(map);
+        int count = call(map);
 
         assertThat(map, is(not(anEmptyMap())));
+        assert count == 2;
     }
 
-    @Test
-    public void incrementsCounter() {
-        when(random.nextInt(100)).thenReturn(0);
-        AtomicInteger counter = new AtomicInteger();
-
-        for (int i = 1; i < 4; i++) {
-            runTask(new HashMap<>(), counter);
-            assert counter.get() == i;
+    private Integer call(Map<Integer, Integer> map) {
+        try {
+            return taskFactory.task(map).call();
+        } catch (Exception e) {
+            return -1;
         }
-    }
-
-    private void runTask(Map<Integer, Integer> map) {
-        runTask(map, mock(AtomicInteger.class));
-    }
-
-    private void runTask(Map<Integer, Integer> map, AtomicInteger atomicInteger) {
-        taskFactory.task(map, atomicInteger).run();
     }
 }

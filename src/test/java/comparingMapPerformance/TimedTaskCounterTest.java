@@ -6,33 +6,38 @@ import org.mockito.stubbing.Answer;
 
 import java.time.Clock;
 import java.time.Instant;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
 
 import static org.mockito.Mockito.*;
 
-public class TimedRunnerTest {
+public class TimedTaskCounterTest {
 
     private Clock clock = mock(Clock.class);
-    private Runnable runnable = mock(Runnable.class);
+    private Callable<Integer> callable = mock(Callable.class);
+    private ExecutorService executorService = mock(ExecutorService.class);
     private int duration = 1;
-    private TimedRunner timedRunner = new TimedRunner(clock, duration);
+    private TimedTaskCounter timedTaskCounter = new TimedTaskCounter(clock, duration);
 
     @Test
     public void runsForDuration() {
         int noOfCalls = 5;
         timeoutIn(noOfCalls);
 
-        timedRunner.run(runnable);
+        timedTaskCounter.run(callable, executorService);
 
-        verify(runnable, times(noOfCalls)).run();
+        verify(executorService, times(noOfCalls)).submit(callable);
+        verify(executorService, times(1)).shutdownNow();
     }
 
     @Test
     public void runsAtLeastOnce() {
         timeoutIn(1);
 
-        timedRunner.run(runnable);
+        timedTaskCounter.run(callable, executorService);
 
-        verify(runnable, times(1)).run();
+        verify(executorService, times(1)).submit(callable);
+        verify(executorService, times(1)).shutdownNow();
     }
 
     private void timeoutIn(int noOfCalls) {
@@ -41,6 +46,7 @@ public class TimedRunnerTest {
 
         doAnswer(new Answer<Instant>() {
             private int count = 0;
+
             public Instant answer(InvocationOnMock invocation) {
                 return count++ == noOfCalls ? futureTime : currentTime;
             }
